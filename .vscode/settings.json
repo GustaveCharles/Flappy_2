@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.sc": "scala",
+    "p_score.h": "c"
+  }
+}
