@@ -9,6 +9,7 @@
 #include "P_Initializer.h"
 #include "P_Time.h"
 #include "P_Score.h"
+#include "P_Audio.h"
 
 #include "bird.h"
 #include "ball.h"
@@ -175,25 +176,29 @@ void P_GL_updateGame()
     // Read held keys
     scanKeys();
     keys = keysDown();
+    // Read the touch position.
+
+	touchPosition touch;
+	touchRead(&touch);
 
     if (Gameplay_state == 0)
     {
 
         // P_GL_updateGameStart();
-        if (keys & KEY_DOWN)
+        if (keys & KEY_DOWN || touch.px > 0 || touch.py > 0)
         {
             Gameplay_state = 1;
-            // mmEffect(SFX_JUMP);
+             mmEffect(SFX_JUMP);
         }
     }
     else if (Gameplay_state == 1)
     {
 
         // Modify position of the sprite accordingly
-        if ((keys & KEY_UP))
+        if ((keys & KEY_UP) || touch.px > 0 || touch.py > 0)
         {
             BirdySpeed = -3;
-            // mmEffect(SFX_JUMP);
+            mmEffect(SFX_JUMP);
         }
 
         if (BirdySpeed < 4)
@@ -226,8 +231,6 @@ void P_GL_updateGame()
             if (AllFig[i].x + 16 == Birdx)
             {
                 Gameplay_playerScore++;
-                //ShowScore();
-                //mmEffect(SFX_POINT);
             }
     }
 
@@ -239,17 +242,19 @@ void P_GL_updateGame()
                true,
                false, false,
                false);
-        
-        if(min < 2 ){
-            if(keys & KEY_DOWN){
+
+        if (min < 2)
+        {
+            if (keys & KEY_DOWN)
+            {
                 Restart_Game();
             }
         }
     }
-
 }
 
-void Restart_Game(){
+void Restart_Game()
+{
 
     f1.x = 0;
     f1.y = 0;
@@ -279,8 +284,6 @@ void Restart_Game(){
     Gameplay_playerScore = 0;
     Birdx = DefaultBirdxPos;
     Birdy = DefaultBirdyPos;
-
-
 }
 
 void Init_Game()
@@ -298,6 +301,7 @@ void Init_Game()
     f3.pal = 0;
 
     P_InitNDS();
+
     configureGraphics_Main();
     configSprites_Main();
 
@@ -322,6 +326,7 @@ void Init_Game()
     irqSet(IRQ_VBLANK, &VBLANK_ISR);
     irqEnable(IRQ_VBLANK);
 }
+
 int main(void)
 {
     Init_Game();
